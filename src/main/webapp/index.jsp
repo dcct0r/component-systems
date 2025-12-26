@@ -1,39 +1,49 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Incident Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-4">
-    <h1>Incident Management System</h1>
-    <p class="lead">Manage and track incidents efficiently</p>
-
-    <div class="mt-4">
-        <a href="incidents?action=new" class="btn btn-primary">
-            Create New Incident
-        </a>
-        <a href="incidents" class="btn btn-secondary">
-            View All Incidents
-        </a>
-        <a href="test" class="btn btn-info">
-            Test Page
-        </a>
-    </div>
-
-    <div class="mt-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Debug Information</h5>
-            </div>
-            <div class="card-body">
-                <p><strong>Context Path:</strong> <%= request.getContextPath() %></p>
-                <p><strong>Servlet Path:</strong> <%= request.getServletPath() %></p>
-                <p><strong>Request URI:</strong> <%= request.getRequestURI() %></p>
-            </div>
+<div class="mt-4">
+    <h5>Create Incident (Rust)</h5>
+    <form id="createIncidentForm">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
         </div>
-    </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="description" name="description" required>
+        </div>
+        <div class="mb-3">
+            <label for="priority" class="form-label">Priority</label>
+            <select id="priority" name="priority" class="form-select">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Incident</button>
+    </form>
+
+    <div id="createResult" class="mt-2"></div>
 </div>
-</body>
-</html>
+
+<script>
+    document.getElementById('createIncidentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const priority = document.getElementById('priority').value;
+
+        fetch('http://localhost:8080/incident/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, description, priority })
+        })
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('createResult').innerText = 'Incident ID: ' + data;
+            })
+            .catch(err => {
+                document.getElementById('createResult').innerText = 'Error: ' + err;
+            });
+    });
+</script>
